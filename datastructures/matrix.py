@@ -21,7 +21,7 @@ class Matrix:
         self.internal_matrix = list_of_cells
 
 
-    def element_at(self, row: int, col: int):
+    def _common_element_parameters_validation(self, row: int, col: int):
         if row <= 0:
             raise Exception(f"Invalid row: row should be a positive integer.")
 
@@ -34,7 +34,46 @@ class Matrix:
         if col > self.cols:
             raise Exception(f"Invalid column: Matrix has a total of {self.cols} columns.")
 
+
+    def element_at(self, row: int, col: int):
+        self._common_element_parameters_validation(row, col)
         return self.internal_matrix[row][col]
+
+
+    def valid_neighbors_of(self, row: int, col: int) -> list[tuple[int, int, float]]:
+        self._common_element_parameters_validation(row, col)
+        
+        # North neighbors
+        if row - 1 > 0 and row - 1 <= self.rows:
+            # Northwest
+            if col - 1 > 0 and col - 1 <= self.cols:
+                yield (row - 1, col - 1, math.sqrt(2))
+            # North
+            if col > 0 and col <= self.cols:
+                yield (row - 1, col, 1)
+            # Northeast
+            if col + 1 > 0 and col + 1 <= self.cols:
+                yield (row - 1, col + 1, math.sqrt(2))
+
+        # South neighbors
+        if row + 1 <= self.rows and row + 1 <= self.rows:
+            # Southwest
+            if col - 1 > 0 and col - 1 <= self.cols:
+                yield (row + 1, col - 1, math.sqrt(2))
+            # South
+            if col > 0 and col <= self.cols:
+                yield (row + 1, col, 1)
+            # Southeast
+            if col + 1 > 0 and col + 1 <= self.cols:
+                yield (row + 1, col + 1, math.sqrt(2))
+
+        # West neighbor
+        if col - 1 > 0 and col - 1 <= self.cols:
+            yield (row, col - 1, 1)
+
+        # East neighbor
+        if col + 1 > 0 and col + 1 <= self.cols:
+            yield (row, col + 1, 1)
 
 
     def _common_distance_parameters_validation(self, row1: int, col1: int, row2: int, col2: int):
@@ -66,8 +105,8 @@ class Matrix:
 
     def euclidean_distance(self, row1: int, col1: int, row2: int, col2: int):
         self._common_distance_parameters_validation(row1, col1, row2, col2)
-        side_1 = 2 * abs(row1 - row2)
-        side_2 = 2 * abs(col1 - col2)
+        side_1 = abs(row1 - row2) ** 2
+        side_2 = abs(col1 - col2) ** 2
         return math.sqrt(side_1 + side_2)
 
 
